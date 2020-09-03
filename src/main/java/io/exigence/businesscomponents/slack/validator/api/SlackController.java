@@ -38,7 +38,7 @@ public class SlackController {
             stringBuilder.append("failed archive channel").append(e.getMessage());
             log.error(e.getMessage());
         }
-        return ResponseEntity.status(stringBuilder.length() == 0 ? 200 : 500)
+        return ResponseEntity.status(stringBuilder.length() == 0 ? 500 : 200)
                 .body(stringBuilder.toString());
     }
 }
