@@ -2,12 +2,15 @@ package io.exigence.businesscomponents.slack.validator.api;
 
 import io.exigence.businesscomponents.slack.validator.dto.ArchiveChannelRequest;
 import io.exigence.businesscomponents.slack.validator.dto.CreateChannelRequest;
+import io.exigence.businesscomponents.slack.validator.dto.CreateChannelResponse;
 import io.exigence.businesscomponents.slack.validator.dto.PostMessageRequest;
 import io.exigence.businesscomponents.slack.validator.service.SlackServiceService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -17,23 +20,24 @@ public class SlackController {
 
     private final SlackServiceService slackServiceService;
 
-    @GetMapping(value = "/start")
-    public ResponseEntity<String> checkSlackApiKey() {
+    @PostMapping(value = "/start/{text}")
+    public ResponseEntity<String> checkSlackApiKey(@PathVariable String text, @RequestBody CreateChannelRequest channelRequest) {
         StringBuilder stringBuilder = new StringBuilder();
+        CreateChannelResponse channelResponse = new CreateChannelResponse();
         try {
-            slackServiceService.createChannel(new CreateChannelRequest("violence22", true));
+            channelResponse = slackServiceService.createChannel(channelRequest);
         } catch (Exception e) {
             stringBuilder.append("failed create channel").append(e.getMessage()).append(";-----");
             log.error(e.getMessage());
         }
         try {
-            slackServiceService.postMessage(new PostMessageRequest("violence22", "hello"));
+            slackServiceService.postMessage(new PostMessageRequest(channelResponse.getChannel().getId(), text));
         } catch (Exception e) {
             stringBuilder.append("failed post message").append(e.getMessage()).append(";-----");
             log.error(e.getMessage());
         }
         try {
-            slackServiceService.archiveChannel(new ArchiveChannelRequest("violence22"));
+            slackServiceService.archiveChannel(new ArchiveChannelRequest(channelResponse.getChannel().getId()));
         } catch (Exception e) {
             stringBuilder.append("failed archive channel").append(e.getMessage());
             log.error(e.getMessage());

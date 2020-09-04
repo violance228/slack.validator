@@ -41,7 +41,7 @@ public class SlackServiceServiceImpl implements SlackServiceService {
     @Retryable(value = { Exception.class }, maxAttempts = 2, backoff = @Backoff(delay = 450))
     public CreateChannelResponse createChannel(CreateChannelRequest channelRequest) throws Exception {
         ResponseEntity<CreateChannelResponse> responseEntity =
-                restTemplate.exchange(slackUrl + "channels.create", POST, new HttpEntity<>(toJson(channelRequest), headers), CreateChannelResponse.class, new HashMap<>());
+                restTemplate.exchange(slackUrl + "conversations.create", POST, new HttpEntity<>(toJson(channelRequest), headers), CreateChannelResponse.class, new HashMap<>());
 
         if (responseEntity.getStatusCodeValue() != 200 || !requireNonNull(responseEntity.getBody()).isOk()) {
             throw new Exception(requireNonNull(responseEntity.getBody()).getError());
@@ -66,7 +66,7 @@ public class SlackServiceServiceImpl implements SlackServiceService {
     @Retryable(value = { Exception.class }, maxAttempts = 2, backoff = @Backoff(delay = 450))
     public ArchiveChannelResponse archiveChannel(ArchiveChannelRequest channelRequest) throws Exception {
         ResponseEntity<ArchiveChannelResponse> responseEntity =
-                restTemplate.exchange(slackUrl + "channels.archive", POST, new HttpEntity<>(toJson(channelRequest), headers), ArchiveChannelResponse.class, new HashMap<>());
+                restTemplate.exchange(slackUrl + "conversations.archive", POST, new HttpEntity<>(toJson(channelRequest), headers), ArchiveChannelResponse.class, new HashMap<>());
 
         if (responseEntity.getStatusCodeValue() != 200 || !requireNonNull(responseEntity.getBody()).isOk())
             throw new Exception(requireNonNull(responseEntity.getBody()).getError());
