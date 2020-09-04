@@ -1,5 +1,6 @@
 package io.exigence.businesscomponents.slack.validator.service;
 
+import io.exigence.businesscomponents.slack.validator.api.exceptions.SlackException;
 import io.exigence.businesscomponents.slack.validator.dto.ArchiveChannelRequest;
 import io.exigence.businesscomponents.slack.validator.dto.ArchiveChannelResponse;
 import io.exigence.businesscomponents.slack.validator.dto.CreateChannelRequest;
@@ -39,12 +40,12 @@ public class SlackServiceServiceImpl implements SlackServiceService {
 
     @Override
     @Retryable(value = { Exception.class }, maxAttempts = 2, backoff = @Backoff(delay = 450))
-    public CreateChannelResponse createChannel(CreateChannelRequest channelRequest) throws Exception {
+    public CreateChannelResponse createChannel(CreateChannelRequest channelRequest) throws SlackException {
         ResponseEntity<CreateChannelResponse> responseEntity =
                 restTemplate.exchange(slackUrl + "conversations.create", POST, new HttpEntity<>(toJson(channelRequest), headers), CreateChannelResponse.class, new HashMap<>());
 
         if (responseEntity.getStatusCodeValue() != 200 || !requireNonNull(responseEntity.getBody()).isOk()) {
-            throw new Exception(requireNonNull(responseEntity.getBody()).getError());
+            throw new SlackException(requireNonNull(responseEntity.getBody()).getError());
         }
 
         return responseEntity.getBody();
@@ -52,24 +53,24 @@ public class SlackServiceServiceImpl implements SlackServiceService {
 
     @Override
     @Retryable(value = { Exception.class }, maxAttempts = 2, backoff = @Backoff(delay = 450))
-    public PostMessageResponse postMessage(PostMessageRequest messageRequest) throws Exception {
+    public PostMessageResponse postMessage(PostMessageRequest messageRequest) throws SlackException {
         ResponseEntity<PostMessageResponse> responseEntity =
                 restTemplate.exchange(slackUrl + "chat.postMessage", POST, new HttpEntity<>(toJson(messageRequest), headers), PostMessageResponse.class, new HashMap<>());
 
         if (responseEntity.getStatusCodeValue() != 200 || !requireNonNull(responseEntity.getBody()).isOk())
-            throw new Exception(requireNonNull(responseEntity.getBody()).getError());
+            throw new SlackException(requireNonNull(responseEntity.getBody()).getError());
 
         return responseEntity.getBody();
     }
 
     @Override
     @Retryable(value = { Exception.class }, maxAttempts = 2, backoff = @Backoff(delay = 450))
-    public ArchiveChannelResponse archiveChannel(ArchiveChannelRequest channelRequest) throws Exception {
+    public ArchiveChannelResponse archiveChannel(ArchiveChannelRequest channelRequest) throws SlackException {
         ResponseEntity<ArchiveChannelResponse> responseEntity =
                 restTemplate.exchange(slackUrl + "conversations.archive", POST, new HttpEntity<>(toJson(channelRequest), headers), ArchiveChannelResponse.class, new HashMap<>());
 
         if (responseEntity.getStatusCodeValue() != 200 || !requireNonNull(responseEntity.getBody()).isOk())
-            throw new Exception(requireNonNull(responseEntity.getBody()).getError());
+            throw new SlackException(requireNonNull(responseEntity.getBody()).getError());
 
         return responseEntity.getBody();
     }

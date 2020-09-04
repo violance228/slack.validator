@@ -1,5 +1,6 @@
 package io.exigence.businesscomponents.slack.validator.service;
 
+import io.exigence.businesscomponents.slack.validator.api.exceptions.SlackException;
 import io.exigence.businesscomponents.slack.validator.dto.ArchiveChannelRequest;
 import io.exigence.businesscomponents.slack.validator.dto.CreateChannelRequest;
 import io.exigence.businesscomponents.slack.validator.dto.CreateChannelResponse;
@@ -23,7 +24,7 @@ class SlackServiceServiceImplTest {
         slackServiceService.init();
         try {
             createChannelResponse = slackServiceService.createChannel(new CreateChannelRequest(String.valueOf(System.nanoTime()), true));
-        } catch (Exception e) {
+        } catch (SlackException e) {
             e.printStackTrace();
         }
     }
@@ -35,7 +36,7 @@ class SlackServiceServiceImplTest {
             CreateChannelResponse channel = slackServiceService.createChannel(new CreateChannelRequest(String.valueOf(System.currentTimeMillis()), true));
             slackServiceService.postMessage(new PostMessageRequest(channel.getChannel().getId(), "sadsa"));
             slackServiceService.archiveChannel(new ArchiveChannelRequest(channel.getChannel().getId()));
-        } catch (Exception e) {
+        } catch (SlackException e) {
             fail();
         }
         Assertions.assertTrue((System.currentTimeMillis() - start) < 2000L);
@@ -50,7 +51,7 @@ class SlackServiceServiceImplTest {
             slackServiceService.postMessage(new PostMessageRequest(channel.getChannel().getId(), "sadsa"));
             slackServiceService.archiveChannel(new ArchiveChannelRequest(channel.getChannel().getId()));
             fail();
-        } catch (Exception e) {
+        } catch (SlackException e) {
             e.printStackTrace();
         }
     }
@@ -61,13 +62,13 @@ class SlackServiceServiceImplTest {
         try {
             slackServiceService.createChannel(new CreateChannelRequest("violence22", true));
             fail();
-        } catch (Exception e) {
+        } catch (SlackException e) {
             e.printStackTrace();
         }
         try {
             slackServiceService.postMessage(new PostMessageRequest(createChannelResponse.getChannel().getId(), "sadsa"));
             slackServiceService.archiveChannel(new ArchiveChannelRequest(createChannelResponse.getChannel().getId()));
-        } catch (Exception e) {
+        } catch (SlackException e) {
             e.printStackTrace();
             fail();
         }

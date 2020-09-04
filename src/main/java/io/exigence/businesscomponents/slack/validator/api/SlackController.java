@@ -1,5 +1,6 @@
 package io.exigence.businesscomponents.slack.validator.api;
 
+import io.exigence.businesscomponents.slack.validator.api.exceptions.SlackException;
 import io.exigence.businesscomponents.slack.validator.dto.ArchiveChannelRequest;
 import io.exigence.businesscomponents.slack.validator.dto.CreateChannelRequest;
 import io.exigence.businesscomponents.slack.validator.dto.CreateChannelResponse;
@@ -26,19 +27,19 @@ public class SlackController {
         CreateChannelResponse channelResponse = new CreateChannelResponse();
         try {
             channelResponse = slackServiceService.createChannel(channelRequest);
-        } catch (Exception e) {
+        } catch (SlackException e) {
             stringBuilder.append("failed create channel").append(e.getMessage()).append(";-----");
             log.error(e.getMessage());
         }
         try {
             slackServiceService.postMessage(new PostMessageRequest(channelResponse.getChannel().getId(), text));
-        } catch (Exception e) {
+        } catch (SlackException e) {
             stringBuilder.append("failed post message").append(e.getMessage()).append(";-----");
             log.error(e.getMessage());
         }
         try {
             slackServiceService.archiveChannel(new ArchiveChannelRequest(channelResponse.getChannel().getId()));
-        } catch (Exception e) {
+        } catch (SlackException e) {
             stringBuilder.append("failed archive channel").append(e.getMessage());
             log.error(e.getMessage());
         }
